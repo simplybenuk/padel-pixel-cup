@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#172b36" />
+    <title>Padel Pixel Cup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand"><span class="brand-icon">P</span><span>PADEL<br />PIXEL CUP</span></div>
+        <div class="edition">DOUBLES ARCADE <span>●</span> 01</div>
+        <button class="sound-button" id="sound-button" aria-label="Toggle sound">♪ SOUND ON</button>
+      </header>
+
+      <main class="layout">
+        <section class="game-column" aria-label="Padel game">
+          <div class="scoreboard">
+            <div class="team team-rivals"><span class="team-dot"></span><span class="team-name">THE RIVALS</span><span class="team-players">ACE + RIO</span></div>
+            <div class="score-center"><span id="rivals-games" class="games">0</span><span class="score-divider">:</span><span id="home-games" class="games">0</span><span class="games-label">GAMES</span></div>
+            <div class="team team-home"><span class="team-players">YOU + MIKA</span><span class="team-name">YOUR TEAM</span><span class="team-dot"></span></div>
+          </div>
+          <div class="court-frame" id="court-frame">
+            <div class="court-topline"><span>PIXEL PARK • COURT 01</span><span id="rally-label">READY TO PLAY</span></div>
+            <div id="game-canvas"></div>
+            <div class="point-score" aria-live="polite"><span id="rivals-points">00</span><span class="point-score-line"></span><span id="home-points">00</span></div>
+            <div id="toast" class="toast" aria-live="polite"></div>
+            <div id="overlay" class="overlay">
+              <div class="overlay-card">
+                <div class="eyebrow">COURT 01 / DOUBLES</div>
+                <h1 id="overlay-title">PADEL<br /><em>PIXEL</em> CUP</h1>
+                <p id="overlay-copy">Two teams. One court. Walls are in play.</p>
+                <button id="start-button" class="primary-button">START MATCH <span>→</span></button>
+                <div class="overlay-small">FIRST TO 3 GAMES WINS</div>
+              </div>
+            </div>
+          </div>
+          <div class="statusbar"><span><span class="live-dot"></span><span id="status-text">WAITING FOR PLAYERS</span></span><span>BEST OF 5 GAMES</span></div>
+        </section>
+
+        <aside class="sidebar">
+          <div class="sidebar-heading"><span>PLAYER 01</span><span>● LIVE</span></div>
+          <div class="player-card"><div class="avatar" aria-hidden="true"><span class="avatar-head"></span><span class="avatar-body"></span><span class="avatar-racket"></span></div><div><div class="tiny-label">YOU ARE PLAYING AS</div><div class="player-name">JUNO</div><div class="player-role">THE ROOKIE</div></div></div>
+          <div class="control-heading">HOW TO PLAY <span>↗</span></div>
+          <div class="control-row"><div class="keys"><span>↑</span><span>←</span><span>↓</span><span>→</span></div><div><strong>MOVE</strong><small>Cover your side of the court</small></div></div>
+          <div class="control-row"><div class="key-space">SPACE</div><div><strong>HIT THE BALL</strong><small>Release near the ball to swing</small></div></div>
+          <div class="control-row"><div class="key-space charge-key">HOLD SPACE</div><div><strong>POWER SHOT</strong><small>Charge, then release to smash</small></div></div>
+          <div class="tip-card"><div class="tip-icon">★</div><div><strong>COURT TIP</strong><p>Let the ball bounce once, then use the back wall to buy time. Mika covers the right side.</p></div></div>
+          <div class="charge-wrap"><div class="charge-label"><span>SHOT POWER</span><span id="charge-value">0%</span></div><div class="charge-track"><div id="charge-fill"></div></div></div>
+          <div class="sidebar-footer">MADE FOR QUICK RALLIES <span>✳</span></div>
+        </aside>
+      </main>
+      <footer class="footer"><span>© PIXEL PARK ARCADE</span><span>ARROWS TO MOVE <b>•</b> SPACE TO SWING</span></footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
