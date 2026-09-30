@@ -2,7 +2,7 @@ name: Deploy game to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [gameplay-v2]
   workflow_dispatch:
 
 permissions:
@@ -24,6 +24,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm test
       - run: npm run build -- --base /padel-pixel-cup/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
