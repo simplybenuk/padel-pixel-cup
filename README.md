@@ -79,4 +79,6 @@ Devices on your LAN can then open `http://YOUR_COMPUTER_LAN_IP:5173/`. Replace `
 
 Juno, Ace, Mika, and Rio take turns serving by game. The same player serves every point of a game, switching service sides each point. Juno serves with Space; computer players serve automatically. Serves go diagonally into the opposite service box, and the receiver must let the serve bounce before returning it. A first serve fault gets a second try.
 
+Mika covers the half opposite Juno and leaves shots in Juno's half for you. The rivals will aim there too. When the status bar says "YOUR BALL", move to the bounce marker and release Space near the ball.
+
 During rallies, the ball may bounce once on your side. Court walls are in play after that bounce, and a shot may rebound off your own wall before crossing the net. A ball that hits the opponents' wall before landing, hits the net, lands on the hitter's side, or bounces twice loses the point. The first team to win three games takes the match. The ball's shadow shows its current ground position, the orange ring predicts its next bounce, and the dots mark its height.

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import './style.css';
 import { serverIndexForGame, serviceSideForPoint, isLegalServeBounce } from './match-rules.js';
+import { partnerTakesBall, opponentAimX } from './ai-tactics.js';
 
 const mount = document.querySelector('#game-canvas');
 const ui = {
@@ -134,7 +135,7 @@ function makePlayer(name,side,x,z,shirt,skin,hair,shorts){
   const marker=new THREE.Mesh(new THREE.ConeGeometry(.23,.26,4),mat('#ffec9b'));
   marker.position.set(0,2.55,0);marker.rotation.z=Math.PI;marker.visible=name==='Juno';group.add(marker);
   group.position.set(x,0,z);
-  return {name,side,x,z,homeX:x,homeZ:z,group,armPivot,leftLeg,rightLeg,leftArm,marker,swing:0,step:0,cooldown:0,speed:name==='Juno'?7:5.05};
+  return {name,side,x,z,homeX:x,homeZ:z,group,armPivot,leftLeg,rightLeg,leftArm,marker,swing:0,step:0,cooldown:0,speed:name==='Juno'?7:4.65};
 }
 const players=[
   makePlayer('Juno',1,-2.2,5.4,'#ef9f77','#e4ae87','#384b40','#315b64'),
@@ -259,9 +260,10 @@ function shoot(player,power=0){
   const leftGap=Math.min(...receivingTeam.map(p=>Math.abs(p.x+3.45)));
   const rightGap=Math.min(...receivingTeam.map(p=>Math.abs(p.x-3.45)));
   const openSide=leftGap>rightGap?-3.45:3.45;
+  const opponentTarget=player.side===-1?opponentAimX(openSide,human.x,Math.random()):openSide;
   const targetX=player===human
     ?THREE.MathUtils.clamp((aim?aim*3.15:openSide*.7)+(Math.random()-.5)*.7,-4.1,4.1)
-    :THREE.MathUtils.clamp((Math.random()<.7?openSide:(Math.random()-.5)*6.4)+(Math.random()-.5)*.55,-4.1,4.1);
+    :THREE.MathUtils.clamp((Math.random()<.78?opponentTarget:(Math.random()-.5)*6.4)+(Math.random()-.5)*.55,-4.1,4.1);
   const targetZ=-player.side*(lob?8.5:powered?8.2:6.7+Math.random()*1.3);
   const vy=lob?10.1:powered?6.25:7.35;
   const flight=(vy+Math.sqrt(vy*vy+2*15*Math.max(.1,b.y-.19)))/15;
@@ -305,6 +307,7 @@ function updateAI(dt){
   const b=game.ball,active=game.phase==='rally';
   for(const side of [1,-1]){
     const team=side===1?[players[1]]:[players[2],players[3]];
+    if(side===1&&Math.abs(human.x)>.65)team[0].coverX=-Math.sign(human.x)*2.25;
     const incoming=active&&b.last!==side&&(Math.sign(b.z)===side||b.vz*side>0);
     let chaser=null;
     let px=0,pz=side*4.5;
@@ -312,14 +315,17 @@ function updateAI(dt){
       const landing=predictFloor();
       px=THREE.MathUtils.clamp(landing.x,-4.35,4.35);
       pz=THREE.MathUtils.clamp(landing.z,side===1?.95:-9.3,side===1?9.3:-.95);
-      if(side===1){const partner=team[0];if(px>.15||Math.hypot(px-partner.x,pz-partner.z)+.7<Math.hypot(px-human.x,pz-human.z))chaser=partner}
+      if(side===1){
+        const partner=team[0];
+        if(partnerTakesBall(px,human.x,partner.coverX,Math.hypot(px-partner.x,pz-partner.z),Math.hypot(px-human.x,pz-human.z)))chaser=partner;
+      }
       else chaser=team.reduce((a,p)=>Math.hypot(px-p.x,pz-p.z)<Math.hypot(px-a.x,pz-a.z)?p:a);
     }
     for(const p of team){
       const tx=p===chaser?px:p.coverX;
       const tz=p===chaser?pz:p.coverZ;
       moveToward(p,tx,tz,dt);
-      if(p===chaser&&Math.hypot(b.x-p.x,b.z-p.z)<1.5&&b.y<2.25&&b.y>.2)shoot(p,0);
+      if(p===chaser&&Math.hypot(b.x-p.x,b.z-p.z)<1.28&&b.y<2.15&&b.y>.2)shoot(p,0);
     }
   }
 }
@@ -378,6 +384,11 @@ function updateBallVisual(){
   ui.heightValue.textContent=game.phase==='rally'?(height<.85?'LOW':height<2.05?'MID':'HIGH'):'—';
   ui.heightFill.style.width=`${Math.min(100,Math.round(height/4.2*100))}%`;
   ui.bounceValue.textContent=game.phase==='rally'?(b.bounces?'AFTER BOUNCE':'IN FLIGHT'):'READY';
+  if(game.phase==='rally'){
+    const partner=players[1],incoming=b.last===-1&&landing.z>.2;
+    const partnerBall=incoming&&partnerTakesBall(landing.x,human.x,partner.coverX,Math.hypot(landing.x-partner.x,landing.z-partner.z),Math.hypot(landing.x-human.x,landing.z-human.z));
+    ui.status.textContent=incoming&&!partnerBall?'YOUR BALL · MOVE AND HIT':'READ THE BOUNCE · PLAY THE WALL';
+  }
 }
 function updatePlayerVisuals(dt){
   for(const p of players){p.cooldown=Math.max(0,p.cooldown-dt);p.swing=Math.max(0,p.swing-dt);p.group.position.x=p.x;p.group.position.z=p.z;
